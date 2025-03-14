@@ -3,6 +3,7 @@
     <device id="retina6_3" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -34,7 +35,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qPx-am-fCM">
                                 <rect key="frame" x="0.0" y="78" width="402" height="300"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rtO-hF-bt7">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rtO-hF-bt7">
                                         <rect key="frame" x="16" y="68.333333333333343" width="370" height="21.666666666666671"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
                                         <nil key="textColor"/>
@@ -69,13 +70,14 @@
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VtN-Pg-V3E">
                                                 <rect key="frame" x="358" y="0.0" width="44" height="44"/>
-                                                <color key="backgroundColor" red="0.85098040100000005" green="0.5176470876" blue="0.2235293984" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="44" id="2dC-fN-kPh"/>
                                                     <constraint firstAttribute="width" constant="44" id="HXh-zo-y8s"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain"/>
+                                                <buttonConfiguration key="configuration" style="plain">
+                                                    <imageReference key="image" image="bookmark" catalog="system" symbolScale="large"/>
+                                                </buttonConfiguration>
                                             </button>
                                         </subviews>
                                         <constraints>
@@ -95,12 +97,13 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LNJ-ST-VbK">
                                                 <rect key="frame" x="16.000000000000007" y="0.0" width="101.66666666666669" height="44"/>
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aFM-aU-dqY">
-                                                        <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aFM-aU-dqY">
+                                                        <rect key="frame" x="0.0" y="-2" width="44" height="48"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="44" id="8E0-4z-ZGQ"/>
                                                             <constraint firstAttribute="height" constant="44" id="NnN-WL-sPH"/>
                                                         </constraints>
+                                                        <imageReference key="image" image="arrow.up" catalog="system" symbolScale="large"/>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I8w-2D-zPW">
                                                         <rect key="frame" x="44" y="0.0" width="57.666666666666657" height="44"/>
@@ -119,12 +122,13 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DcL-cp-Tl2">
                                                 <rect key="frame" x="164.66666666666666" y="0.0" width="86" height="44"/>
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="OPm-eP-oTI">
-                                                        <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="OPm-eP-oTI">
+                                                        <rect key="frame" x="0.0" y="-3" width="44" height="50"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="44" id="0Ka-iU-xxi"/>
                                                             <constraint firstAttribute="height" constant="44" id="wMm-cd-nWn"/>
                                                         </constraints>
+                                                        <imageReference key="image" image="message" catalog="system" symbolScale="large"/>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tfl-Bm-7dR">
                                                         <rect key="frame" x="44" y="0.0" width="42" height="44"/>
@@ -145,13 +149,14 @@
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w6k-bj-O1e">
                                                         <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
-                                                        <color key="backgroundColor" red="0.85098040100000005" green="0.5176470876" blue="0.2235293984" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="44" id="v1B-Cx-Xrb"/>
                                                             <constraint firstAttribute="height" constant="44" id="vBy-i6-SbY"/>
                                                         </constraints>
                                                         <state key="normal" title="Button"/>
-                                                        <buttonConfiguration key="configuration" style="plain"/>
+                                                        <buttonConfiguration key="configuration" style="plain">
+                                                            <imageReference key="image" image="square.and.arrow.up" catalog="system" symbolScale="large"/>
+                                                        </buttonConfiguration>
                                                     </button>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="us0-di-s3p">
                                                         <rect key="frame" x="44" y="0.0" width="44.333333333333343" height="44"/>
@@ -207,10 +212,13 @@
                     <connections>
                         <outlet property="bookmarkButton" destination="VtN-Pg-V3E" id="bDH-BC-6pr"/>
                         <outlet property="commentsCountLabel" destination="Tfl-Bm-7dR" id="2ef-hp-baz"/>
+                        <outlet property="commentsImg" destination="OPm-eP-oTI" id="N0L-Ya-I0c"/>
                         <outlet property="domainLabel" destination="xL0-3n-B4J" id="LcY-Tb-fNP"/>
                         <outlet property="postImage" destination="Ql6-v5-n88" id="wUm-TM-cdO"/>
                         <outlet property="postTextLabel" destination="rtO-hF-bt7" id="DRj-hN-Iq6"/>
+                        <outlet property="ratingImg" destination="aFM-aU-dqY" id="cHS-C1-bLY"/>
                         <outlet property="ratingLabel" destination="I8w-2D-zPW" id="Q67-pX-xXz"/>
+                        <outlet property="shareButton" destination="w6k-bj-O1e" id="sK9-nq-b3S"/>
                         <outlet property="timeAgoLabel" destination="SUC-gQ-9aI" id="HCx-Ej-0Ja"/>
                         <outlet property="usernameLabel" destination="aYG-Cn-ath" id="gPd-tK-aZq"/>
                     </connections>
@@ -221,6 +229,10 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrow.up" catalog="system" width="118" height="128"/>
+        <image name="bookmark" catalog="system" width="110" height="128"/>
+        <image name="message" catalog="system" width="128" height="116"/>
+        <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

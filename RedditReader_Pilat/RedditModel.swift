@@ -10,7 +10,7 @@ import Foundation
 struct RedditPost: Codable {
     let title: String
     let author_fullname: String
-    let time_passed: Double
+    let created_utc: Double
     let domain: String
     let url_img: String?
     let ups: Int

@@ -15,7 +15,7 @@ struct NetworkManager {
         
     }
     
-    static func fetchData(subredit: String, limit: Int, after: String?, completion: @escaping (Result<Data, Error>) -> Void) {
+    static func fetchData(subredit: String, limit: Int, after: String?, completion: @escaping (Result<[RedditPost], Error>) -> Void) {
         var urlStr = "https://www.reddit.com/r/\(subredit)/top/.json?limit=\(limit)"
         
         if let after = after {
@@ -42,6 +42,7 @@ struct NetworkManager {
                 let jsonResponse = try JSONDecoder().decode(RedditApiResponse.self, from: data)
                 
                 let posts = jsonResponse.data.children.map{$0.data}
+                completion(.success(posts))
                 
                 
             } catch {
