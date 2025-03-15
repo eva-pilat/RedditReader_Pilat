@@ -58,11 +58,23 @@ class PostViewController: UIViewController {
         commentsCountLabel.text = String(post.num_comments)
         ratingLabel.text = String(post.ups + post.downs)
         
-        if let urlString = post.image?.replacingOccurrences(of: "&amp", with: "&") {
-            let url = URL(string: urlString)
+//        if let urlString = post.image?.replacingOccurrences(of: "&amp", with: "&") {
+//            let url = URL(string: urlString)
+//            postImage.sd_setImage(with: url)
+//        } else {
+//            print("no image puuuk")
+//        }
+//        
+        if let preview = post.preview,
+           let firstImage = preview.images.first {
+            let imageURL = firstImage.source.url
+            let cleanedURL = imageURL.replacingOccurrences(of: "&amp;", with: "&")
+            
+            let url = URL(string: cleanedURL)
             postImage.sd_setImage(with: url)
+            print("Preview image URL:", cleanedURL)
         } else {
-            print("no image puuuk")
+            print("No preview images")
         }
         
     }

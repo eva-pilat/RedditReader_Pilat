@@ -17,7 +17,30 @@ struct RedditPost: Codable {
     let downs: Int
     let num_comments: Int
     var saved: Bool = Bool.random()
+    let preview: RedditPreview?
     }
+
+struct RedditPreview: Codable {
+    let images: [RedditPreviewImage]
+    let enabled: Bool
+}
+
+struct RedditPreviewImage: Codable {
+    let source: RedditPreviewSource
+    let resolutions: [RedditPreviewSource]?
+    let variants: [String: RedditPreviewVariants]?
+    let id: String
+}
+
+struct RedditPreviewSource: Codable {
+    let url: String
+    let width: Int
+    let height: Int
+}
+
+struct RedditPreviewVariants: Codable {
+    // хз взагалі....
+}
 
 struct RedditChild: Codable {
     let data: RedditPost
