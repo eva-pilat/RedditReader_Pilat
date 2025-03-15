@@ -12,7 +12,7 @@ struct RedditPost: Codable {
     let author_fullname: String
     let created_utc: Double
     let domain: String
-    let url_img: String?
+    let image: String?
     let ups: Int
     let downs: Int
     let num_comments: Int

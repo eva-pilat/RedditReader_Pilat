@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class PostViewController: UIViewController {
     
@@ -30,6 +31,9 @@ class PostViewController: UIViewController {
                 case .success(let posts):
                     if let post = posts.first {
                         //print(post)
+                        print("title = \(post.title)")
+                        print("domain = \(post.domain)")
+                        print("url_overridden_by_dest = \(post.image ?? "nil")")
                         self.setupUI(with: post)
                     }
                     
@@ -54,7 +58,12 @@ class PostViewController: UIViewController {
         commentsCountLabel.text = String(post.num_comments)
         ratingLabel.text = String(post.ups + post.downs)
         
-        
+        if let urlString = post.image?.replacingOccurrences(of: "&amp", with: "&") {
+            let url = URL(string: urlString)
+            postImage.sd_setImage(with: url)
+        } else {
+            print("no image puuuk")
+        }
         
     }
     
