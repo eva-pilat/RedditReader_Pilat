@@ -23,9 +23,10 @@ class PostListViewController: UITableViewController {
         //print("PostListViewController loaded!")
         //tableView.dataSource = self
         //tableView.delegate = self
-        
-        let nib = UINib(nibName: "PostView", bundle: nil)
-        tableView.register(nib, forCellReuseIdentifier: "PostCell")
+
+        // [of] Nope: this is already done in storyboard
+//        let nib = UINib(nibName: "PostView", bundle: nil)
+//        tableView.register(nib, forCellReuseIdentifier: "PostCell")
         
         fetchPosts()
         // Do any additional setup after loading the view.
@@ -75,7 +76,9 @@ class PostListViewController: UITableViewController {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: "PostCell",
             for: indexPath
-        ) as? PostTableViewCell else {
+        ) as? PostTableViewCell
+                // [of] No. Better crash in this case
+        else {
             return UITableViewCell()
         }
         let post = posts[indexPath.row]
