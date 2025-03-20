@@ -39,6 +39,7 @@ class PostView: UIView {
         
         if let preview = post.preview,
            let firstImage = preview.images.first {
+            //postImage.isHidden = false
             let imageURL = firstImage.source.url
             let cleanedURL = imageURL.replacingOccurrences(of: "&amp;", with: "&")
             
@@ -46,6 +47,7 @@ class PostView: UIView {
             postImage.sd_setImage(with: url)
             print("Preview image URL:", cleanedURL)
         } else {
+            postImage.heightAnchor.constraint(equalToConstant: 0).isActive = true
             print("No preview images")
         }
     }
@@ -85,7 +87,7 @@ class PostView: UIView {
         
         func fixInView(_ container: UIView!) -> Void{
             self.translatesAutoresizingMaskIntoConstraints = false;
-            self.frame = container.frame;
+            //self.frame = container.frame;
             container.addSubview(self);
             NSLayoutConstraint(item: self, attribute: .leading, relatedBy: .equal, toItem: container, attribute: .leading, multiplier: 1.0, constant: 0).isActive = true
             NSLayoutConstraint(item: self, attribute: .trailing, relatedBy: .equal, toItem: container, attribute: .trailing, multiplier: 1.0, constant: 0).isActive = true

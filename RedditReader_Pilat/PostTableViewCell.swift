@@ -14,7 +14,7 @@ class PostTableViewCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-
+        //postView?.heightAnchor.constraint(lessThanOrEqualToConstant: 400).isActive = true
         // [of] Nope, wrong. That is already tated in the storyboard...
 
 //        let bundle = Bundle(for: PostView.self)
