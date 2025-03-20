@@ -28,7 +28,7 @@ class PostViewController: UIViewController {
         NetworkManager.fetchData(subredit: "iOS", limit: 1, after: nil){ result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let posts):
+                case .success(let (posts, newAfter)):
                     if let post = posts.first {
                         //print(post)
                         print("title = \(post.title)")
