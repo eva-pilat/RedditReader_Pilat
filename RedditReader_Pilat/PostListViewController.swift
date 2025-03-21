@@ -29,8 +29,8 @@ class PostListViewController: UITableViewController {
 //        tableView.register(nib, forCellReuseIdentifier: "PostCell")
         
         fetchPosts()
-        //myTableView.estimatedRowHeight = 300
-        myTableView.rowHeight = UITableView.automaticDimension
+        self.myTableView.rowHeight = UITableView.automaticDimension
+        self.myTableView.estimatedRowHeight = 300
         // Do any additional setup after loading the view.
     }
     
