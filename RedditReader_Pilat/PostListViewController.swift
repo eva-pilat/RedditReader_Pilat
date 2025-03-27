@@ -14,8 +14,10 @@ class PostListViewController: UITableViewController {
     //@IBOutlet weak var postContentView: UIView!
     
     // MARK: - Properties & data
-    var posts: [RedditPost] = []
-    var after: String?
+    private var posts: [RedditPost] = []
+    private var after: String?
+    private var lastSelectedPost: RedditPost?
+    private var needToLoadMore = false
     
     
     override func viewDidLoad() {
@@ -34,11 +36,26 @@ class PostListViewController: UITableViewController {
         // Do any additional setup after loading the view.
     }
     
+    override func scrollViewDidScroll(_ scrollView: UIScrollView){
+        let offsetY = scrollView.contentOffset.y
+            let contentHeight = scrollView.contentSize.height
+            let height = scrollView.frame.size.height
+        
+            if offsetY > contentHeight - height - 100 {
+                if !needToLoadMore {
+                    fetchPosts()
+                }
+            }
+    }
+    
     private func fetchPosts() {
         NetworkManager.fetchData(subredit: "iOS", limit: 10, after: after){ result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let (posts, newAfter)):
+                    if newAfter == nil || newAfter == self.after {
+                        return
+                    }
                     if let post = posts.first {
                         //print(post)
                         print("comments_count = \(post.num_comments)")
@@ -53,6 +70,7 @@ class PostListViewController: UITableViewController {
                 case .failure(let error):
                     print("Error: \(error)")
                 }
+                self.needToLoadMore = false
             }
             
         }

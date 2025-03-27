@@ -39,7 +39,7 @@ class PostView: UIView {
         
         if let preview = post.preview,
            let firstImage = preview.images.first {
-            //postImage.isHidden = false
+            postImage.isHidden = false
             let imageURL = firstImage.source.url
             let cleanedURL = imageURL.replacingOccurrences(of: "&amp;", with: "&")
             
@@ -47,7 +47,9 @@ class PostView: UIView {
             postImage.sd_setImage(with: url)
             print("Preview image URL:", cleanedURL)
         } else {
-            postImage.heightAnchor.constraint(equalToConstant: 0).isActive = true
+            //postImage.heightAnchor.constraint(equalToConstant: 0).isActive = true
+            postImage.isHidden = true
+            postImage.image = nil
             print("No preview images")
         }
     }
