@@ -47,7 +47,7 @@ class PostView: UIView {
             postImage.sd_setImage(with: url)
             print("Preview image URL:", cleanedURL)
         } else {
-            //postImage.heightAnchor.constraint(equalToConstant: 0).isActive = true
+            //postImage.heightAnchor.constraint(equalToConstant: 180).isActive = false
             postImage.isHidden = true
             postImage.image = nil
             print("No preview images")

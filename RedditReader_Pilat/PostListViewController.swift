@@ -9,6 +9,12 @@ import UIKit
 
 class PostListViewController: UITableViewController {
     
+    // MARK: - Const
+    struct Const {
+        //static let tableViewSegueID = "PostListVC"
+        static let postViewSegueID = "PostDetailsVC"
+    }
+    
     //MARK: - IBOutlet
     @IBOutlet var myTableView: UITableView!
     //@IBOutlet weak var postContentView: UIView!
@@ -76,15 +82,15 @@ class PostListViewController: UITableViewController {
         }
     }
     
-    /*
+    
      // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     override func prepare(
+        for segue: UIStoryboardSegue,
+        sender: Any?
+     ){
      // Get the new view controller using segue.destination.
      // Pass the selected object to the new view controller.
      }
-     */
     
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
@@ -109,7 +115,12 @@ class PostListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView,
                             didSelectRowAt indexPath: IndexPath) {
             let selectedPost = posts[indexPath.row]
-            // Тут робиш push або segue на PostDetailsViewController
-            // передаєш йому selectedPost
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            guard let detailsVC = storyboard.instantiateViewController(withIdentifier: "PostDetailsVC") as? PostViewController else {
+                return
+            }
+            detailsVC.post = selectedPost
+            
+            navigationController?.pushViewController(detailsVC, animated: true)
         }
 }
