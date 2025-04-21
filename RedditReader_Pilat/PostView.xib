@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -11,12 +11,14 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PostView" customModule="RedditReader_Pilat" customModuleProvider="target">
             <connections>
+                <outlet property="bookmarkButton" destination="0px-Bw-DCq" id="0bl-dK-TJR"/>
                 <outlet property="commentsCountLabel" destination="XCB-bR-gq7" id="gZk-0X-dBz"/>
                 <outlet property="containerView" destination="OmJ-X2-2ia" id="T4H-ed-zQj"/>
                 <outlet property="domainLabel" destination="6A2-Ad-02o" id="rGB-7M-0HC"/>
                 <outlet property="postImage" destination="z0P-9F-YRk" id="dbj-gR-LBs"/>
                 <outlet property="postTextLabel" destination="cgH-ZP-h6y" id="hEN-TI-UUS"/>
                 <outlet property="ratingLabel" destination="3oa-gA-XRb" id="7Dn-ff-5i6"/>
+                <outlet property="shareButton" destination="q7F-WQ-ydk" id="3VH-Lx-hk8"/>
                 <outlet property="timeAgoLabel" destination="atA-O2-xWb" id="iLg-Ft-jET"/>
                 <outlet property="usernameLabel" destination="07R-dQ-NgW" id="ILQ-SH-k1C"/>
             </connections>
@@ -155,7 +157,7 @@
                                         <imageReference key="image" image="square.and.arrow.up" catalog="system" symbolScale="large"/>
                                     </buttonConfiguration>
                                     <connections>
-                                        <action selector="shareButton:" destination="-1" eventType="touchUpInside" id="NbV-Ty-jYP"/>
+                                        <action selector="shareButton:" destination="-1" eventType="touchUpInside" id="Sen-xg-1NG"/>
                                     </connections>
                                 </button>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OyH-4N-6AJ">
@@ -208,7 +210,7 @@
         <image name="message" catalog="system" width="128" height="116"/>
         <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
         <systemColor name="systemGray6Color">
-            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

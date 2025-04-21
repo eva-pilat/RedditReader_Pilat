@@ -8,6 +8,7 @@
 import Foundation
 
 struct RedditPost: Codable {
+    let id: String
     let title: String
     let author_fullname: String
     let created_utc: Double
@@ -18,7 +19,11 @@ struct RedditPost: Codable {
     let num_comments: Int
     var saved: Bool = Bool.random()
     let preview: RedditPreview?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, title, author_fullname, created_utc, domain, image, ups, downs, num_comments, saved, preview
     }
+}
 
 struct RedditPreview: Codable {
     let images: [RedditPreviewImage]

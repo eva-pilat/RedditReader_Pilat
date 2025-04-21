@@ -8,26 +8,62 @@
 import UIKit
 import SDWebImage
 
+protocol PostViewDelegate: AnyObject {
+    func postViewDidTapShare(_ postView: PostView, with url: URL)
+    func postViewDidToggleSave(_ postView: PostView, post: RedditPost)
+}
 
 class PostView: UIView {
     
     let kCONTENT_XIB_NAME = "PostView"
+    weak var delegate: PostViewDelegate?
+    private var post: RedditPost?
     
     //MARK - IBOutlets
     @IBOutlet var containerView: UIView!
     @IBOutlet private weak var usernameLabel: UILabel!
     @IBOutlet private weak var timeAgoLabel: UILabel!
     @IBOutlet private weak var domainLabel: UILabel!
+    @IBOutlet weak var bookmarkButton: UIButton!
     @IBAction func bookmarkBottle(_ sender: UIButton) {
+        guard var post = self.post else {
+            print("nema knopky")
+            return
+        }
+        post.saved.toggle()
+        self.post = post
+        updateBookmarkButton(isSaved: post.saved)
+        delegate?.postViewDidToggleSave(self, post: post)
+        
     }
+    
+    @IBOutlet private weak var shareButton: UIButton!
     @IBOutlet private weak var postTextLabel: UILabel!
     @IBOutlet private weak var postImage: UIImageView!
     @IBOutlet private weak var ratingLabel: UILabel!
     @IBOutlet private weak var commentsCountLabel: UILabel!
     @IBAction func shareButton(_ sender: UIButton) {
+        print("Share button action triggered")
+        guard let url = currentPostUrl else {
+            print("Share button: currentPostUrl is nil")
+            return
+        }
+        print("Share button: Attempting to share URL: \(url)")
+        guard let postUrl = URL(string: url) else {
+            print("Share button: Invalid URL: \(url)")
+            return
+        }
+        delegate?.postViewDidTapShare(self, with: postUrl)
+    }
+    private func updateBookmarkButton(isSaved: Bool) {
+        let imageName = isSaved ? "bookmark.fill" : "bookmark"
+        bookmarkButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
     
+    public var currentPostUrl: String?
+    
     func configure(with post: RedditPost) {
+        self.post = post
         let date = Date(timeIntervalSince1970: post.created_utc)
         timeAgoLabel.text = timeAgo(from: date)
         
@@ -36,6 +72,13 @@ class PostView: UIView {
         domainLabel.text = post.domain
         commentsCountLabel.text = String(post.num_comments)
         ratingLabel.text = String(post.ups + post.downs)
+        let slug = post.title.lowercased()
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }
+            .joined(separator: "_")
+        self.currentPostUrl = "https://www.reddit.com/r/ios/comments/\(post.id)/\(slug)"
+        //print(self.currentPostUrl ?? "failed to make post url")
+        
         
         if let preview = post.preview,
            let firstImage = preview.images.first {
@@ -45,13 +88,14 @@ class PostView: UIView {
             
             let url = URL(string: cleanedURL)
             postImage.sd_setImage(with: url)
-            print("Preview image URL:", cleanedURL)
+            //print("Preview image URL:", cleanedURL)
         } else {
             //postImage.heightAnchor.constraint(equalToConstant: 180).isActive = false
             postImage.isHidden = true
             postImage.image = nil
-            print("No preview images")
+            //print("No preview images")
         }
+        updateBookmarkButton(isSaved: post.saved)
     }
     
     private func timeAgo(from date: Date) -> String {

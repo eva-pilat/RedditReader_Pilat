@@ -14,6 +14,7 @@ class PostTableViewCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        postView?.delegate = self
         //postView?.heightAnchor.constraint(lessThanOrEqualToConstant: 400).isActive = true
         // [of] Nope, wrong. That is already tated in the storyboard...
 
@@ -37,6 +38,33 @@ class PostTableViewCell: UITableViewCell {
     }
     
     
+}
+
+extension PostTableViewCell: PostViewDelegate {
+    func postViewDidToggleSave(_ postView: PostView, post: RedditPost) {
+        SavedPostManager.shared.updatePosts(post)
+    }
+    
+    func postViewDidTapShare(_ postView: PostView, with url: URL) {
+        print("PostTableViewCell: Sharing URL: \(url)")
+        let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                // Знаходимо найвищий контролер у ієрархії
+        var topController = UIApplication.shared.windows.first?.rootViewController
+        while let presented = topController?.presentedViewController {
+            topController = presented
+        }
+        topController?.present(activityVC, animated: true, completion: nil)
+    }
+}
+
+extension UIView {
+    var window: UIWindow? {
+        var view = self
+        while let s = view.superview {
+            view = s
+        }
+        return view as? UIWindow
+    }
 }
     
     /*

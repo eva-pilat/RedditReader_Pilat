@@ -25,9 +25,9 @@ class PostListViewController: UITableViewController {
     private var lastSelectedPost: RedditPost?
     private var needToLoadMore = false
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        myTableView.delegate = self
         //print("PostListViewController loaded!")
         //tableView.dataSource = self
         //tableView.delegate = self
@@ -114,13 +114,26 @@ class PostListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView,
                             didSelectRowAt indexPath: IndexPath) {
-            let selectedPost = posts[indexPath.row]
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            guard let detailsVC = storyboard.instantiateViewController(withIdentifier: "PostDetailsVC") as? PostViewController else {
-                return
-            }
-            detailsVC.post = selectedPost
-            
-            navigationController?.pushViewController(detailsVC, animated: true)
+        let selectedPost = posts[indexPath.row]
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let detailsVC = storyboard.instantiateViewController(withIdentifier: "PostDetailsVC") as? PostViewController else {
+            return
         }
+        detailsVC.post = selectedPost
+            
+        navigationController?.pushViewController(detailsVC, animated: true)
+        }
+}
+
+extension PostViewController: PostViewDelegate {
+    func postViewDidToggleSave(_ postView: PostView, post: RedditPost) {
+        SavedPostManager.shared.updatePosts(post)
+        self.post = post
+    }
+    
+    func postViewDidTapShare(_ postView: PostView, with url: URL) {
+        //print("PostListViewController: Sharing URL: \(url)")
+        //let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        //present(activityVC, animated: true, completion: nil)
+    }
 }
