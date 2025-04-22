@@ -1,5 +1,5 @@
 //
-//  PostTableViewCell.swift
+//  PostView.swift
 //  RedditReader_Pilat
 //
 //  Created by Єва Матвєєва on 18.03.2025.
@@ -13,13 +13,16 @@ protocol PostViewDelegate: AnyObject {
     func postViewDidToggleSave(_ postView: PostView, post: RedditPost)
 }
 
-class PostView: UIView {
+class PostView: UIView, UIGestureRecognizerDelegate {
     
+    // MARK: - Data
     let kCONTENT_XIB_NAME = "PostView"
     weak var delegate: PostViewDelegate?
     private var post: RedditPost?
+    private var bookmarkLayer: CAShapeLayer?
+    private var didDoubleTap: Bool = false
     
-    //MARK - IBOutlets
+    // MARK: - IBOutlets
     @IBOutlet var containerView: UIView!
     @IBOutlet private weak var usernameLabel: UILabel!
     @IBOutlet private weak var timeAgoLabel: UILabel!
@@ -27,23 +30,24 @@ class PostView: UIView {
     @IBOutlet weak var bookmarkButton: UIButton!
     @IBAction func bookmarkBottle(_ sender: UIButton) {
         guard var post = self.post else {
-            print("nema knopky")
+            //print("nema knopky")
             return
         }
+        let wasSaved = post.saved
         post.saved.toggle()
         self.post = post
+        print("PostView: Bookmark button - Post saved state changed to: \(post.saved) from \(wasSaved)")
         updateBookmarkButton(isSaved: post.saved)
         delegate?.postViewDidToggleSave(self, post: post)
-        
+        showBookmarkAnimation(isSaved: post.saved, wasSaved: wasSaved)
     }
-    
     @IBOutlet private weak var shareButton: UIButton!
     @IBOutlet private weak var postTextLabel: UILabel!
     @IBOutlet private weak var postImage: UIImageView!
     @IBOutlet private weak var ratingLabel: UILabel!
     @IBOutlet private weak var commentsCountLabel: UILabel!
     @IBAction func shareButton(_ sender: UIButton) {
-        print("Share button action triggered")
+        //print("Share button action triggered")
         guard let url = currentPostUrl else {
             print("Share button: currentPostUrl is nil")
             return
@@ -55,10 +59,120 @@ class PostView: UIView {
         }
         delegate?.postViewDidTapShare(self, with: postUrl)
     }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+        
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        commonInit()
+    }
+        
+    func commonInit() {
+        Bundle.main.loadNibNamed(kCONTENT_XIB_NAME, owner: self, options: nil)
+        containerView.fixInView(self)
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap))
+        doubleTapGesture.numberOfTapsRequired = 2
+        postImage.isUserInteractionEnabled = true
+        postImage.addGestureRecognizer(doubleTapGesture)
+    }
+    
     private func updateBookmarkButton(isSaved: Bool) {
+        print("PostView: Updating bookmark button - isSaved: \(isSaved)")
         let imageName = isSaved ? "bookmark.fill" : "bookmark"
         bookmarkButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
+    
+    private var isAnimating = false
+    
+    @objc private func handleDoubleTap() {
+        guard !isAnimating, var post = self.post else { return }
+        print("PostView: Double tap detected")
+        didDoubleTap = true
+        let wasSaved = post.saved
+        post.saved.toggle()
+        self.post = post
+        
+        updateBookmarkButton(isSaved: post.saved)
+        showBookmarkAnimation(isSaved: post.saved, wasSaved: wasSaved)
+        delegate?.postViewDidToggleSave(self, post: post)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.isAnimating = false
+        }
+        
+    }
+    
+    private func showBookmarkAnimation(isSaved: Bool, wasSaved: Bool) {
+        //print("PostView: Showing bookmark animation - isSaved: \(isSaved), wasSaved: \(wasSaved)")
+        bookmarkLayer?.removeFromSuperlayer()
+        bookmarkLayer = nil
+            
+        let iconSize: CGFloat = 50
+        let iconFrame = CGRect(
+            x: postImage.bounds.midX - iconSize / 2,
+            y: postImage.bounds.midY - iconSize / 2,
+            width: iconSize,
+            height: iconSize
+        )
+            
+        let path = UIBezierPath()
+        let scale: CGFloat = iconSize / 24
+        path.move(to: CGPoint(x: 12 * scale, y: 0 * scale))
+        path.addLine(to: CGPoint(x: 15 * scale, y: 0 * scale))
+        path.addLine(to: CGPoint(x: 15 * scale, y: 18 * scale))
+        path.addLine(to: CGPoint(x: 12 * scale, y: 15 * scale))
+        path.addLine(to: CGPoint(x: 9 * scale, y: 18 * scale))
+        path.addLine(to: CGPoint(x: 9 * scale, y: 0 * scale))
+        path.close()
+            
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = path.cgPath
+        shapeLayer.fillColor = UIColor.systemBlue.cgColor
+        //shapeLayer.opacity = 0.8
+        shapeLayer.frame = iconFrame
+        bookmarkLayer = shapeLayer
+        postImage.layer.addSublayer(shapeLayer)
+        
+        if isSaved == wasSaved {
+            shapeLayer.opacity = isSaved ? 0.8 : 0
+            print("PostView: No animation applied - isSaved == wasSaved")
+            if !isSaved {
+                shapeLayer.removeFromSuperlayer()
+                bookmarkLayer = nil
+            }
+            return
+        }
+        
+        shapeLayer.opacity = isSaved ? 0 : 0.8
+        shapeLayer.transform = isSaved ? CATransform3DMakeScale(0, 0, 1) : CATransform3DMakeScale(1, 1, 1)
+            
+        let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
+        scaleAnimation.fromValue = isSaved ? 0 : 1
+            scaleAnimation.toValue = isSaved ? 1 : 0
+            
+        let opacityAnimation = CABasicAnimation(keyPath: "opacity")
+        opacityAnimation.fromValue = isSaved ? 0 : 0.8
+        opacityAnimation.toValue = isSaved ? 0.8 : 0
+            
+        let animationGroup = CAAnimationGroup()
+        animationGroup.animations = [scaleAnimation, opacityAnimation]
+        animationGroup.duration = 0.3
+        animationGroup.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            
+        shapeLayer.add(animationGroup, forKey: "bookmarkAnimation")
+            
+        if !isSaved {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                print("PostView: Removing bookmark layer")
+                shapeLayer.removeFromSuperlayer()
+                self.bookmarkLayer = nil
+            }
+        }
+    }
+    
     
     public var currentPostUrl: String?
     
@@ -90,10 +204,7 @@ class PostView: UIView {
             postImage.sd_setImage(with: url)
             //print("Preview image URL:", cleanedURL)
         } else {
-            //postImage.heightAnchor.constraint(equalToConstant: 180).isActive = false
-            postImage.isHidden = true
-            postImage.image = nil
-            //print("No preview images")
+            postImage.sd_setImage(with: nil, placeholderImage: UIImage(named: "default_image"))
         }
         updateBookmarkButton(isSaved: post.saved)
     }
@@ -110,22 +221,10 @@ class PostView: UIView {
         }
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-        
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInit()
-    }
-        
-    func commonInit() {
-        Bundle.main.loadNibNamed(kCONTENT_XIB_NAME, owner: self, options: nil)
-        containerView.fixInView(self)
-        //addSubview(containerView)
-        //containerView.frame = bounds
-        //containerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+            return true
         }
     }
 

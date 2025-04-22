@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PostListViewController: UITableViewController, UISearchBarDelegate {
+class PostListViewController: UITableViewController, UISearchBarDelegate, UIGestureRecognizerDelegate {
     
     // MARK: - Const
     struct Const {
@@ -36,10 +36,10 @@ class PostListViewController: UITableViewController, UISearchBarDelegate {
         searchBar.delegate = self
         searchBar.placeholder = "Search saved posts"
         searchBar.showsCancelButton = true
-        searchBar.isHidden = true // Спочатку приховуємо
+        searchBar.isHidden = true
         myTableView.tableHeaderView = searchBar
         searchBar.sizeToFit()
-
+        
         savedPosts = SavedPostManager.shared.savedPosts()
         fetchPosts()
         
@@ -52,8 +52,15 @@ class PostListViewController: UITableViewController, UISearchBarDelegate {
             target: self,
             action: #selector(savedPostsTapped)
         )
+        
+//        let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap(_:)))
+//        singleTapGesture.numberOfTapsRequired = 1
+//        singleTapGesture.delegate = self
+//        myTableView.addGestureRecognizer(singleTapGesture)
         // Do any additional setup after loading the view.
     }
+    
+    
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView){
         let offsetY = scrollView.contentOffset.y
@@ -152,7 +159,7 @@ class PostListViewController: UITableViewController, UISearchBarDelegate {
         }
         tableView.reloadData()
     }
-        
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = nil
         searchBar.resignFirstResponder()
@@ -160,11 +167,28 @@ class PostListViewController: UITableViewController, UISearchBarDelegate {
         tableView.reloadData()
     }
     
-     // MARK: - Navigation
-     override func prepare(
+    // MARK: - Navigation
+    override func prepare(
         for segue: UIStoryboardSegue,
         sender: Any?
-     ){}
+    ){}
+    
+//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+//        return true
+//    }
+    
+//    @objc func handleSingleTap(_ gesture: UITapGestureRecognizer) {
+//        let point = gesture.location(in: myTableView)
+//        if let indexPath = myTableView.indexPathForRow(at: point) {
+//            let selectedPost = filteredPosts[indexPath.row]
+//            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//            guard let detailsVC = storyboard.instantiateViewController(withIdentifier: "PostDetailsVC") as? PostViewController else {
+//                return
+//            }
+//            detailsVC.post = selectedPost
+//            navigationController?.pushViewController(detailsVC, animated: true)
+//        }
+//    }
     
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
@@ -186,17 +210,18 @@ class PostListViewController: UITableViewController, UISearchBarDelegate {
         return cell
     }
     
-    override func tableView(_ tableView: UITableView,
-                            didSelectRowAt indexPath: IndexPath) {
-        let selectedPost = posts[indexPath.row]
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let detailsVC = storyboard.instantiateViewController(withIdentifier: "PostDetailsVC") as? PostViewController else {
-            return
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            guard let self = self else { return }
+            let selectedPost = self.filteredPosts[indexPath.row]
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            guard let detailsVC = storyboard.instantiateViewController(withIdentifier: "PostDetailsVC") as? PostViewController else {
+                return
+            }
+            detailsVC.post = selectedPost
+            self.navigationController?.pushViewController(detailsVC, animated: true)
         }
-        detailsVC.post = selectedPost
-            
-        navigationController?.pushViewController(detailsVC, animated: true)
-        }
+    }
 }
 
 extension PostViewController: PostViewDelegate {
