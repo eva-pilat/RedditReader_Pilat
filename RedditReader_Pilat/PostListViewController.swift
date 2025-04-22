@@ -26,7 +26,6 @@ class PostListViewController: UITableViewController, UISearchBarDelegate, UIGest
     private var lastSelectedPost: RedditPost?
     private var needToLoadMore = false
     private var isShowingSaved = false
-    private var savedPosts: [RedditPost] = []
     private let searchBar = UISearchBar()
     
     override func viewDidLoad() {
@@ -40,7 +39,6 @@ class PostListViewController: UITableViewController, UISearchBarDelegate, UIGest
         myTableView.tableHeaderView = searchBar
         searchBar.sizeToFit()
         
-        savedPosts = SavedPostManager.shared.savedPosts()
         fetchPosts()
         
         self.myTableView.rowHeight = UITableView.automaticDimension
@@ -60,7 +58,13 @@ class PostListViewController: UITableViewController, UISearchBarDelegate, UIGest
         // Do any additional setup after loading the view.
     }
     
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if isShowingSaved {
+            filteredPosts = SavedPostManager.shared.savedPosts()
+            tableView.reloadData()
+        }
+    }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView){
         let offsetY = scrollView.contentOffset.y
@@ -105,7 +109,7 @@ class PostListViewController: UITableViewController, UISearchBarDelegate, UIGest
                     self.posts += updatedPosts
                     
                     if self.isShowingSaved {
-                        self.filteredPosts = self.savedPosts
+                        self.filteredPosts = SavedPostManager.shared.savedPosts()
                     } else {
                         self.filteredPosts = self.posts
                     }
@@ -153,9 +157,9 @@ class PostListViewController: UITableViewController, UISearchBarDelegate, UIGest
     // MARK: - UISearchBarDelegate
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty {
-            filteredPosts = savedPosts
+            filteredPosts = SavedPostManager.shared.savedPosts()
         } else {
-            filteredPosts = savedPosts.filter { $0.title.lowercased().contains(searchText.lowercased()) }
+            filteredPosts = SavedPostManager.shared.savedPosts().filter { $0.title.lowercased().contains(searchText.lowercased()) }
         }
         tableView.reloadData()
     }
@@ -163,7 +167,7 @@ class PostListViewController: UITableViewController, UISearchBarDelegate, UIGest
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = nil
         searchBar.resignFirstResponder()
-        filteredPosts = savedPosts
+        filteredPosts = SavedPostManager.shared.savedPosts()
         tableView.reloadData()
     }
     

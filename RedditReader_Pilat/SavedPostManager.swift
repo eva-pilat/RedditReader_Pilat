@@ -23,6 +23,7 @@ class SavedPostManager {
             let encoder = JSONEncoder()
             let data = try encoder.encode(post)
             try data.write(to: fileURL)
+            print("SavedPostManager: Successfully saved \(data.count) posts to \(fileURL)")
         } catch {
             print("error saving posts: \(error)")
         }
@@ -41,18 +42,26 @@ class SavedPostManager {
     
     func updatePosts(_ post: RedditPost) {
         var savedPosts = loadPosts()
+        print("SavedPostManager: Updating post with ID: \(post.id), saved: \(post.saved)")
+        
         if let index = savedPosts.firstIndex(where: { $0.id == post.id }) {
-            savedPosts.remove(at: index)
+            if post.saved {
+                savedPosts[index] = post
+                print("SavedPostManager: Updated existing post with ID: \(post.id)")
+            } else {
+                savedPosts.remove(at: index)
+                print("SavedPostManager: Removed post with ID: \(post.id)")}
         } else if post.saved {
             savedPosts.append(post)
-        } else {
-            savedPosts.removeAll { $0.id == post.id }
+            print("SavedPostManager: Added new post with ID: \(post.id)")
         }
         savePosts(savedPosts)
     }
     
     func savedPosts() -> [RedditPost] {
-        return loadPosts().filter { $0.saved }
+        let posts = loadPosts().filter { $0.saved }
+        print("SavedPostManager: Returning \(posts.count) saved posts")
+        return posts
     }
 }
     
