@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PostListViewController: UITableViewController {
+class PostListViewController: UITableViewController, UISearchBarDelegate {
     
     // MARK: - Const
     struct Const {
@@ -27,10 +27,18 @@ class PostListViewController: UITableViewController {
     private var needToLoadMore = false
     private var isShowingSaved = false
     private var savedPosts: [RedditPost] = []
+    private let searchBar = UISearchBar()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         myTableView.delegate = self
+        
+        searchBar.delegate = self
+        searchBar.placeholder = "Search saved posts"
+        searchBar.showsCancelButton = true
+        searchBar.isHidden = true // Спочатку приховуємо
+        myTableView.tableHeaderView = searchBar
+        searchBar.sizeToFit()
 
         savedPosts = SavedPostManager.shared.savedPosts()
         fetchPosts()
@@ -59,7 +67,7 @@ class PostListViewController: UITableViewController {
         }
     }
     private func fetchPosts() {
-        if NetworkMonitor.shared.isNetworkAvailable() { //false { 
+        if NetworkMonitor.shared.isNetworkAvailable() { //false {
             print("PostListViewController: Network available, fetching posts from server")
             fetchPostsFromServer()
         } else {
@@ -120,7 +128,12 @@ class PostListViewController: UITableViewController {
         updateRightBarButton()
         if isShowingSaved {
             filteredPosts = SavedPostManager.shared.savedPosts()
+            searchBar.isHidden = false
+            searchBar.becomeFirstResponder()
         } else {
+            searchBar.isHidden = true
+            searchBar.text = nil
+            searchBar.resignFirstResponder()
             filteredPosts = posts
         }
         tableView.reloadData()
@@ -128,6 +141,23 @@ class PostListViewController: UITableViewController {
     
     private func updateRightBarButton() {
         navigationItem.rightBarButtonItem?.image = UIImage(systemName: isShowingSaved ? "bookmark.fill" : "bookmark")
+    }
+    
+    // MARK: - UISearchBarDelegate
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            filteredPosts = savedPosts
+        } else {
+            filteredPosts = savedPosts.filter { $0.title.lowercased().contains(searchText.lowercased()) }
+        }
+        tableView.reloadData()
+    }
+        
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = nil
+        searchBar.resignFirstResponder()
+        filteredPosts = savedPosts
+        tableView.reloadData()
     }
     
      // MARK: - Navigation
