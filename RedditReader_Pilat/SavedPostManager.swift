@@ -50,6 +50,10 @@ class SavedPostManager {
         }
         savePosts(savedPosts)
     }
+    
+    func savedPosts() -> [RedditPost] {
+        return loadPosts().filter { $0.saved }
+    }
 }
     
 

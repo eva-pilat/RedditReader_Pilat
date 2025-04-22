@@ -21,40 +21,55 @@ class PostListViewController: UITableViewController {
     
     // MARK: - Properties & data
     private var posts: [RedditPost] = []
+    private var filteredPosts: [RedditPost] = []
     private var after: String?
     private var lastSelectedPost: RedditPost?
     private var needToLoadMore = false
+    private var isShowingSaved = false
+    private var savedPosts: [RedditPost] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         myTableView.delegate = self
-        //print("PostListViewController loaded!")
-        //tableView.dataSource = self
-        //tableView.delegate = self
 
-        // [of] Nope: this is already done in storyboard
-//        let nib = UINib(nibName: "PostView", bundle: nil)
-//        tableView.register(nib, forCellReuseIdentifier: "PostCell")
-        
+        savedPosts = SavedPostManager.shared.savedPosts()
         fetchPosts()
+        
         self.myTableView.rowHeight = UITableView.automaticDimension
         self.myTableView.estimatedRowHeight = 300
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "bookmark"),
+            style: .plain,
+            target: self,
+            action: #selector(savedPostsTapped)
+        )
         // Do any additional setup after loading the view.
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView){
         let offsetY = scrollView.contentOffset.y
-            let contentHeight = scrollView.contentSize.height
-            let height = scrollView.frame.size.height
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
         
-            if offsetY > contentHeight - height - 100 {
-                if !needToLoadMore {
-                    fetchPosts()
-                }
+        if offsetY > contentHeight - height - 100 {
+            if !needToLoadMore {
+                fetchPosts()
             }
+        }
+    }
+    private func fetchPosts() {
+        if NetworkMonitor.shared.isNetworkAvailable() { //false { 
+            print("PostListViewController: Network available, fetching posts from server")
+            fetchPostsFromServer()
+        } else {
+            print("PostListViewController: No network, loading saved posts")
+            loadSavedPosts()
+        }
     }
     
-    private func fetchPosts() {
+    private func fetchPostsFromServer() {
+        needToLoadMore = true
         NetworkManager.fetchData(subredit: "iOS", limit: 10, after: after){ result in
             DispatchQueue.main.async {
                 switch result {
@@ -62,14 +77,24 @@ class PostListViewController: UITableViewController {
                     if newAfter == nil || newAfter == self.after {
                         return
                     }
-                    if let post = posts.first {
-                        //print(post)
-                        print("comments_count = \(post.num_comments)")
-                        print("title = \(post.title)")}
-                        //print("domain = \(post.domain)")
-                        //print("url_overridden_by_dest = \(post.image ?? "nil")")
                     self.after = newAfter
-                    self.posts += posts
+                    
+                    let savedPosts = SavedPostManager.shared.savedPosts()
+                    var updatedPosts = posts
+                    for i in 0..<updatedPosts.count {
+                        if let savedPost = savedPosts.first(where: { $0.id == updatedPosts[i].id }) {
+                            updatedPosts[i].saved = savedPost.saved
+                        }
+                    }
+                    
+                    self.posts += updatedPosts
+                    
+                    if self.isShowingSaved {
+                        self.filteredPosts = self.savedPosts
+                    } else {
+                        self.filteredPosts = self.posts
+                    }
+                    
                     self.tableView.reloadData()
                     
                     
@@ -82,19 +107,38 @@ class PostListViewController: UITableViewController {
         }
     }
     
+    private func loadSavedPosts() {
+        self.posts = []
+        self.filteredPosts = SavedPostManager.shared.savedPosts()
+        self.tableView.reloadData()
+        print("PostListViewController: Loaded \(self.filteredPosts.count) saved posts")
+        self.needToLoadMore = false
+    }
+    
+    @objc func savedPostsTapped(_ sender: UIBarButtonItem) {
+        isShowingSaved.toggle()
+        updateRightBarButton()
+        if isShowingSaved {
+            filteredPosts = SavedPostManager.shared.savedPosts()
+        } else {
+            filteredPosts = posts
+        }
+        tableView.reloadData()
+    }
+    
+    private func updateRightBarButton() {
+        navigationItem.rightBarButtonItem?.image = UIImage(systemName: isShowingSaved ? "bookmark.fill" : "bookmark")
+    }
     
      // MARK: - Navigation
      override func prepare(
         for segue: UIStoryboardSegue,
         sender: Any?
-     ){
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
+     ){}
     
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
-        return posts.count
+        return filteredPosts.count
     }
     
     override func tableView(_ tableView: UITableView,
@@ -107,7 +151,7 @@ class PostListViewController: UITableViewController {
         else {
             return UITableViewCell()
         }
-        let post = posts[indexPath.row]
+        let post = filteredPosts[indexPath.row]
         cell.configure(with: post)
         return cell
     }
